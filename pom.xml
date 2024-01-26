@@ -4,13 +4,8 @@
   <artifactId>ProjektPapa</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   
-  <repositories>
-	    <repository>
-    <id>jitpack.io</id>
-   <url>https://jitpack.io</url>
-</repository>
-  </repositories>
-
+  
+  
   <properties>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
@@ -33,16 +28,6 @@
         <version>1.7.32</version> <!-- Aktuelle Version überprüfen -->
 
     </dependency>
-    
-    <!-- https://mvnrepository.com/artifact/com.github.PhilJay/MPAndroidChart -->
-<!-- https://mvnrepository.com/artifact/com.github.PhilJay/MPAndroidChart -->
-<dependency>
-    <groupId>com.github.PhilJay</groupId>
-    <artifactId>MPAndroidChart</artifactId>
-    <version>v2.1.1</version>
-</dependency>
-
-
     <dependency>
     <groupId>com.opencsv</groupId>
     <artifactId>opencsv</artifactId>
