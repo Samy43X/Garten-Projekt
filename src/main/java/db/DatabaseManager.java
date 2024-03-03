@@ -19,18 +19,30 @@ public class DatabaseManager {
         jdbi.useHandle(handle -> {
             handle.execute("CREATE TABLE IF NOT EXISTS messungen (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "datum TEXT," +
-                    "stundenangabe INTEGER," +
-                    "temperatur REAL," +
-                    "feuchtigkeit REAL," +
-                    "bodenfeuchtigkeit REAL," +
-                    "elektrischeLeitfaehigkeit REAL," +
-                    "phWert REAL," +
-                    "lichtintensitaet REAL," +
+                    "datum TEXT, " +
+                    "zeitangabe TEXT, " +
+                    "unixzeit INTEGER, " +
+                    "temperatur REAL, " +
+                    "feuchtigkeit REAL, " +
+                    "bodenfeuchtigkeit REAL, " +
+                    "elektrischeLeitfaehigkeit REAL, " +
+                    "phWert REAL, " +
+                    "lichtintensitaet REAL, " +
                     "co2 REAL" +
+                    "pflanzenId INTEGER" +
                     ")");
         });
     }
+    
+    public void createTablePflanzen() {
+        jdbi.useHandle(handle -> {
+            handle.execute("CREATE TABLE IF NOT EXISTS pflanzen (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "art TEXT " +
+                    ")");
+        });
+    }
+    
     
     
     public void createTableWetterdaten() {
@@ -128,6 +140,13 @@ public class DatabaseManager {
     }
     
     
+    
+    public void dropTableMessungen() {
+    	jdbi.useHandle(handle -> {
+            handle.execute("DROP TABLE IF EXISTS messungen");
+            System.out.println("Tabelle messungen wurde gelöscht.");
+        });
+    }
     
     
     public void clearTableMessungen() {

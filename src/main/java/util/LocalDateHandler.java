@@ -9,14 +9,14 @@ public class LocalDateHandler {
 	protected LocalTime currentTime = LocalTime.now();
     protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     protected String formattedDate = currentDate.format(formatter);
-    protected int currentHour = currentTime.getHour();
+    protected String currentHour = String.valueOf(currentTime.getHour());
  
 
-    public int getCurrentHour() {
+    public String getCurrentHour() {
 		return currentHour;
 	}
 
-	public void setCurrentHour(int currentHour) {
+	public void setCurrentHour(String currentHour) {
 		this.currentHour = currentHour;
 	}
 

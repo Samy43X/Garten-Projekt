@@ -28,6 +28,13 @@
         <version>1.7.32</version> <!-- Aktuelle Version überprüfen -->
 
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
+<dependency>
+    <groupId>org.eclipse.paho</groupId>
+    <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+    <version>1.2.5</version>
+</dependency>
+
     <dependency>
     <groupId>com.opencsv</groupId>
     <artifactId>opencsv</artifactId>

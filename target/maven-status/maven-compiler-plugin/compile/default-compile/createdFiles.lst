@@ -4,12 +4,15 @@ util\LocalDateHandler.class
 objects\Data.class
 util\JsonToWetterdatenConverter.class
 db\DataCreation.class
+mqtt\MQTTtoSQLite.class
+rest\server\CorsFilter.class
 db\DatabaseManager.class
+util\CSVReaderClass.class
 objects\Response.class
 objects\WeatherIconDao.class
 util\JsonToWetterdatenConverter$1.class
 objects\messungen.class
 objects\WeatherIcon.class
+rest\server\Server.class
 util\WeatherApiClient.class
-util\CSVReader.class
 objects\WeatherIconDaoImpl.class
