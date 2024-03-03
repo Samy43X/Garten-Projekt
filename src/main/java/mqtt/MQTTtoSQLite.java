@@ -156,7 +156,7 @@ public class MQTTtoSQLite {
     }
     
     private static String pflanzenartAusgeben(String message) {
-        Pattern pattern = Pattern.compile("^(.*?) / Feuchtigkeitsmessung: \\d+ %%, Uhrzeit: \\d+");
+    	Pattern pattern = Pattern.compile("^(.*?) / Feuchtigkeitsmessung: \\d+%, Uhrzeit: \\d+");
         java.util.regex.Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {
         	System.out.println("POW"+matcher.group(1)+"POWS");
