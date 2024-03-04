@@ -7,9 +7,11 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 public class DatabaseManager {
 	private Jdbi jdbi;
+	private String databaseUrl;
 
     public DatabaseManager(String databaseUrl) {
         // Konfiguriere JDBI mit SQLite-Plugin
+    	this.databaseUrl = databaseUrl;
         this.jdbi = Jdbi.create(databaseUrl)
                 .installPlugin(new SQLitePlugin())
                 .installPlugin(new SqlObjectPlugin());
@@ -199,6 +201,19 @@ public class DatabaseManager {
     }
 
     
+    public boolean connect() {
+    	 this.jdbi = Jdbi.create(databaseUrl)
+    	            .installPlugin(new SQLitePlugin())
+    	            .installPlugin(new SqlObjectPlugin());
+    	    System.out.println("Datenbankverbindung erfolgreich hergestellt.");
+    	    return true;
+    }
+
+    public boolean disconnect() {
+        // Implementieren Sie die Logik zum Trennen der Verbindung
+        // Beispiel: Schließen Sie die Jdbi-Verbindung
+        return true; // Rückgabe true, wenn erfolgreich getrennt
+    }
     
 	public Jdbi getJdbi() {
 		return jdbi;

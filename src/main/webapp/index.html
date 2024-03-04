@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Status</title>
+</head>
+<body>
+    <h2>Server Status: <span id="server-status">DISCONNECTED</span></h2>
+    <button onclick="connectDatabase()">Verbinden mit Datenbank</button>
+    <button onclick="disconnectDatabase()">Trennen von Datenbank</button>
+    <button onclick="connectMQTT()">Verbinden mit MQTT</button>
+    <button onclick="disconnectMQTT()">Trennen von MQTT</button>
+    <!-- Shutdown Button hinzufügen -->
+    <button onclick="shutdownServer()">Server Beenden</button>
+
+    <script>
+    function updateStatus() {
+        fetch('/server/status')
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('server-status');
+                if(data.connected) {
+                    statusElement.textContent = 'CONNECTED';
+                    statusElement.style.color = 'green'; // Optional: Farbänderung für visuelles Feedback
+                } else {
+                    statusElement.textContent = 'DISCONNECTED';
+                    statusElement.style.color = 'red'; // Optional: Farbänderung für visuelles Feedback
+                }
+            })
+            .catch(error => console.error('Fehler beim Abrufen des Serverstatus:', error));
+    }
+
+        function connectDatabase() {
+            fetch('/server/database/connect', { method: 'POST' })
+                .then(response => updateStatus());
+        }
+
+        function disconnectDatabase() {
+            fetch('/server/database/disconnect', { method: 'POST' })
+                .then(response => updateStatus());
+        }
+
+        function connectMQTT() {
+            fetch('/server/mqtt/connect', { method: 'POST' })
+                .then(response => updateStatus());
+        }
+
+        function disconnectMQTT() {
+            fetch('/server/mqtt/disconnect', { method: 'POST' })
+                .then(response => updateStatus());
+        }
+
+        // Funktion zum Herunterfahren des Servers hinzufügen
+        function shutdownServer() {
+            if(confirm("Sind Sie sicher, dass Sie den Server herunterfahren möchten?")) {
+                fetch('/server/shutdown', { method: 'POST' })
+                    .then(response => alert("Server wird heruntergefahren..."))
+                    .catch(error => console.error('Fehler beim Herunterfahren des Servers:', error));
+            }
+        }
+    </script>
+</body>
+</html>

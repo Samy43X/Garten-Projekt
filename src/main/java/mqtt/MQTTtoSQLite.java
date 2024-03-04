@@ -21,22 +21,29 @@ import ch.qos.logback.core.boolex.Matcher;
 public class MQTTtoSQLite {
 //	private static final String DATABASE_URL = "jdbc:sqlite:garten.db";
 
-	public MQTTtoSQLite(Jdbi jdbi){
+	public MQTTtoSQLite(Jdbi jdbi, String brokerUrl, String clientId){
 		MQTTtoSQLite.jdbi = jdbi;
+		this.brokerUrl = brokerUrl;
+        this.clientId = clientId;
 	}
 	
 	
 		private static Jdbi jdbi;
-        final String broker = "tcp://192.168.2.60:1883";
-        final String clientId = "JavaClient";
+        //final String broker = "tcp://192.168.2.60:1883";
+        String brokerUrl; // = "tcp://192.168.178.51:1883";
+        String clientId;  //= "JavaClient";
         final String topic = "feuchtigkeitsmessung";
 		public Object creator;
 		MqttClient client;
+		
+
+
 		int messageCount = 0;
 
-        public void verbindenMitMQTT() {
-        try (MqttClient client = new MqttClient(broker, clientId)) {
-        	this.client = client;
+        public void startenVonMQTT() {
+        try {
+        	
+        	this.client = new MqttClient(brokerUrl, clientId);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
             client.connect(connOpts);
@@ -51,18 +58,18 @@ public class MQTTtoSQLite {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws MqttException {
                     saveMessage(topic, new String(message.getPayload()));
-//                    messageCount++;
-//
-//                    if (messageCount >= 10) {
-//                        new Thread(() -> {
-//                            try {
-//                                client.disconnect();
-//                                System.out.println("Disconnected from the broker after receiving 10 messages.");
-//                            } catch (MqttException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }).start();
-//                    }
+                    /*messageCount++;
+
+                    if (messageCount >= 10) {
+                        new Thread(() -> {
+                            try {
+                                client.disconnect();
+                                System.out.println("Disconnected from the broker after receiving 10 messages.");
+                            } catch (MqttException e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
+                    }*/
                 }
 
                 @Override
@@ -79,16 +86,36 @@ public class MQTTtoSQLite {
         }
     }
 
-        public void trenneVonMQTT() {
-            if (client != null && client.isConnected()) {
-                try {
-                    client.disconnect();
-                    System.out.println("Disconnected from MQTT broker");
-                } catch (MqttException e) {
-                    System.err.println("Error disconnecting from MQTT broker: " + e.getMessage());
+        
+        public void connectMQTT() {
+            try {
+                if (this.client != null) {
+                    if (this.client.isConnected()) {
+                        this.client.disconnect();
+                    }
+                    this.client.close();
                 }
+                this.client = new MqttClient(brokerUrl, clientId);
+                MqttConnectOptions connOpts = new MqttConnectOptions();
+                connOpts.setCleanSession(true);
+                this.client.connect(connOpts);
+
+                // Konfigurieren Sie hier Ihren Client weiter, z.B. das Setzen von Callbacks
+            } catch (MqttException e) {
+                e.printStackTrace();
             }
         }
+
+        public void disconnectMQTT() {
+            try {
+                if (this.client != null && this.client.isConnected()) {
+                    this.client.disconnect();
+                }
+            } catch (MqttException e) {
+            	System.err.println("Error disconnecting from MQTT broker: " + e.getMessage());
+            }
+        }
+       
 
     private static void saveMessage(String topic, String message) {
     	int unix = unixZeitAusgeben(message);
@@ -164,6 +191,15 @@ public class MQTTtoSQLite {
         }
         return null; 
     }
+    
+    public MqttClient getClient() {
+		return client;
+	}
+
+
+	public void setClient(MqttClient client) {
+		this.client = client;
+	}
 
 
 }
