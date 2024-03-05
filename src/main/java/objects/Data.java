@@ -5,8 +5,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Data {
-	
-
 		 	 String app_temp;
 			 String aqi;			 
 			 String city_name;
@@ -286,9 +284,4 @@ public class Data {
 			public void setWind_spd(String wind_spd) {
 				this.wind_spd = wind_spd;
 			}
-
-			 
-			 
-			 
-
 }

@@ -15,4 +15,7 @@ public interface WeatherIconDao {
 
     @SqlBatch("INSERT INTO weathericon (weather_id, description, weather_code, icon) VALUES (:weatherId, :description, :weatherCode, :icon)")
     void insertAllWeatherIcons(@BindBean List<WeatherIcon> weatherIcons);
+
+    @SqlUpdate("DROP TABLE IF EXISTS weathericon")
+    void dropWeatherIconTable();
 }

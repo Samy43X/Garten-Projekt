@@ -180,24 +180,6 @@ public class DatabaseManager {
         });
     }
         
-    public void deleteWetterAPITable(Jdbi jdbi) {
-        // Öffne eine Transaction, um sicherzustellen, dass die Änderungen atomar sind
-        try (Handle handle = jdbi.open()) {
-            handle.begin();
-
-            try {
-                // Führe die SQL-Abfrage aus, um die Tabelle zu löschen
-                handle.execute("DROP TABLE IF EXISTS wetterAPI");
-
-                // Bestätige die Transaktion
-                handle.commit();
-            } catch (Exception e) {
-                // Bei einem Fehler mache einen Rollback, um die Datenbank in einen konsistenten Zustand zu versetzen
-                handle.rollback();
-                throw e; // Wirf die Exception erneut, damit sie nach oben weitergereicht wird
-            }
-        }
-    }
 
 	public static Jdbi getJdbi() {
         if (Objects.nonNull(jdbi)) {

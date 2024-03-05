@@ -149,7 +149,7 @@ public class DataCreation {
         // Führt die Aufgabe jede Stunde aus, beginnend mit der nächsten vollen Stunde
         scheduler.scheduleAtFixedRate(() -> insertWetterAPIbig(jdbi, wetterdaten),
                 delayUntilNextHour, TimeUnit.HOURS.toSeconds(1), TimeUnit.SECONDS);
-        System.out.println("Weather data iserted.");
+        System.out.println("Weather data inserted.");
     }
 
     private long calculateDelayUntilNextHour() {
