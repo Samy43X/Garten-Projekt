@@ -7,6 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 
 import com.opencsv.CSVReader;
 
+import db.dao.WeatherIconDao;
 import mqtt.MQTTtoSQLite;
 import objects.Data;
 import objects.WeatherIconDaoImpl;
@@ -24,28 +25,22 @@ public class StartServers {
 		
 		String databaseUrl = "jdbc:sqlite:garten.db";
 		DatabaseManager dbManager = new DatabaseManager(databaseUrl);
+        DatabaseInit.createDatabase();
+        final var jdbi = DatabaseManager.getJdbi();
 		LocalDateHandler formatter = new LocalDateHandler();
 		WeatherApiClient weather = new WeatherApiClient();
 		JsonToWetterdatenConverter converter = new JsonToWetterdatenConverter();
-		WeatherIconDaoImpl dao = new WeatherIconDaoImpl(dbManager.getJdbi());
+		WeatherIconDaoImpl dao = new WeatherIconDaoImpl(DatabaseManager.getJdbi());
 		CSVReaderClass reader = new CSVReaderClass();
-		MQTTtoSQLite mqtt = new MQTTtoSQLite(dbManager.getJdbi(), "tcp://192.168.178.51:1883", "JavaClient");
+		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://192.168.178.51:1883", "JavaClient");
 		
 
 		String date = formatter.getFormattedDate();
 		String currentHour = String.valueOf(formatter.getCurrentHour());
 		WeatherApiClient weatherApi = new WeatherApiClient();
-		
-		
-        
-        //dbManager.deleteWetterAPITable(dbManager.getJdbi());
-        //dbManager.createTableMessungen();
-        dbManager.createTableWetterdaten();
-        dbManager.createTableWetterAPI();
-        dbManager.createTablePflanzen();
-        dao.dropTable();
-        dao.createTable();
-        dao.insertAllWeatherIcons(reader.readCSVAndCreateObjects());       
+
+        final var weatherIconDao = jdbi.onDemand(WeatherIconDao.class);
+        weatherIconDao.insertAllWeatherIcons(reader.readCSVAndCreateObjects());
         
         System.out.println("Server started");
         dbManager.dropTableMessungen();
@@ -58,7 +53,7 @@ public class StartServers {
         StartWeb.showControlWindow();
         System.out.println("Webserver started");
         
-        creator.insertWetterAPIAtFullHour(dbManager.getJdbi(), converter.convertJsonToWetterAPI(weather.getWeatherDataJSON()));
+        creator.insertWetterAPIAtFullHour(DatabaseManager.getJdbi(), converter.convertJsonToWetterAPI(weather.getWeatherDataJSON()));
         
         System.out.println(weatherApi.getWeatherDataJSON());
         converter.convertJsonToWetterAPI(weatherApi.getWeatherDataJSON());

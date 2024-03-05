@@ -1,20 +1,19 @@
 package db;
 
+import java.util.Objects;
+
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlite3.SQLitePlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 public class DatabaseManager {
-	private Jdbi jdbi;
-	private String databaseUrl;
+	private static Jdbi jdbi = null;
+	private static String databaseUrl;
 
     public DatabaseManager(String databaseUrl) {
         // Konfiguriere JDBI mit SQLite-Plugin
-    	this.databaseUrl = databaseUrl;
-        this.jdbi = Jdbi.create(databaseUrl)
-                .installPlugin(new SQLitePlugin())
-                .installPlugin(new SqlObjectPlugin());
+    	DatabaseManager.databaseUrl = databaseUrl;
     }
 
     public void createTableMessungen() {
@@ -200,28 +199,13 @@ public class DatabaseManager {
         }
     }
 
-    
-    public boolean connect() {
-    	 this.jdbi = Jdbi.create(databaseUrl)
-    	            .installPlugin(new SQLitePlugin())
-    	            .installPlugin(new SqlObjectPlugin());
-    	    System.out.println("Datenbankverbindung erfolgreich hergestellt.");
-    	    return true;
-    }
-
-    public boolean disconnect() {
-        // Implementieren Sie die Logik zum Trennen der Verbindung
-        // Beispiel: Schließen Sie die Jdbi-Verbindung
-        return true; // Rückgabe true, wenn erfolgreich getrennt
-    }
-    
-	public Jdbi getJdbi() {
+	public static Jdbi getJdbi() {
+        if (Objects.nonNull(jdbi)) {
+            return jdbi;
+        }
+        DatabaseManager.jdbi = Jdbi.create(databaseUrl)
+                .installPlugin(new SQLitePlugin())
+                .installPlugin(new SqlObjectPlugin());
 		return jdbi;
-	}
-
-	public void setJdbi(Jdbi jdbi) {
-		this.jdbi = jdbi;
-	}
-    
-    
+	} 
 }
