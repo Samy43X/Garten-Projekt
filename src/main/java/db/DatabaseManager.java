@@ -170,15 +170,7 @@ public class DatabaseManager {
 
     }
     
-    
-    public void clearTableWetterAPI() {
-        jdbi.useHandle(handle -> {
-            handle.execute("DELETE FROM wetterAPI");
-            handle.createUpdate("DELETE FROM sqlite_sequence WHERE name = 'wetterAPI'")
-            .execute();
-            System.out.println("Alle Daten aus der Tabelle Wetterdaten gelöscht.");
-        });
-    }
+ 
         
 
 	public static Jdbi getJdbi() {
