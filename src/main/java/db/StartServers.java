@@ -9,11 +9,13 @@ import com.opencsv.CSVReader;
 
 import db.dao.WeatherIconDao;
 import mqtt.MQTTtoSQLite;
+import mqtt.MosquittoLauncher;
 import objects.Data;
 import objects.WeatherIconDaoImpl;
 import rest.server.ServerStatusController;
 import rest.server.StartWeb;
 import util.CSVReaderClass;
+import util.ConfigurationLoader;
 import util.JsonToWetterdatenConverter;
 import util.LocalDateHandler;
 import util.WeatherApiClient;
@@ -32,7 +34,8 @@ public class StartServers {
 		JsonToWetterdatenConverter converter = new JsonToWetterdatenConverter();
 		WeatherIconDaoImpl dao = new WeatherIconDaoImpl(DatabaseManager.getJdbi());
 		CSVReaderClass reader = new CSVReaderClass();
-		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://192.168.178.51:1883", "JavaClient");
+		MosquittoLauncher broker = new MosquittoLauncher(ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.exe.path"), ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.conf.path"));
+		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://192.168.2.60:1883", "JavaClient");
 		
 
 		String date = formatter.getFormattedDate();
@@ -47,7 +50,6 @@ public class StartServers {
         dbManager.createTableMessungen();
         
         mqtt.startenVonMQTT();
-        ServerStatusController status = new ServerStatusController(mqtt);
         StartWeb webServer = new StartWeb();
         webServer.startServer();
         StartWeb.showControlWindow();

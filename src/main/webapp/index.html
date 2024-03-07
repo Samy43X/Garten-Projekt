@@ -5,7 +5,7 @@
     <title>Server Status</title>
 </head>
 <body>
-    <h2>Server Status: <span id="server-status">DISCONNECTED</span></h2>
+    <h2>Server Status: <span id="server-status">Prüfung läuft...</span></h2>
     <button onclick="connectDatabase()">Verbinden mit Datenbank</button>
     <button onclick="disconnectDatabase()">Trennen von Datenbank</button>
     <button onclick="connectMQTT()">Verbinden mit MQTT</button>
@@ -23,12 +23,19 @@
                     statusElement.textContent = 'CONNECTED';
                     statusElement.style.color = 'green'; // Optional: Farbänderung für visuelles Feedback
                 } else {
-                    statusElement.textContent = 'DISCONNECTED';
+                    statusElement.textContent = 'DISCONNECTEDs';
                     statusElement.style.color = 'red'; // Optional: Farbänderung für visuelles Feedback
                 }
             })
-            .catch(error => console.error('Fehler beim Abrufen des Serverstatus:', error));
+            .catch(error => {
+                console.error('Fehler beim Abrufen des Serverstatus:', error);
+                const statusElement = document.getElementById('server-status');
+                statusElement.textContent = 'Fehler bei Statusprüfung'; // Fehlermeldung bei Problemen mit der Statusabfrage
+                statusElement.style.color = 'orange'; // Optional: Farbänderung zur Fehleranzeige
+            });
     }
+
+    window.onload = updateStatus;
 
         function connectDatabase() {
             fetch('/server/database/connect', { method: 'POST' })

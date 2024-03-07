@@ -1,7 +1,5 @@
 package rest.server;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -13,24 +11,34 @@ import jakarta.ws.rs.core.Response;
 import mqtt.MQTTtoSQLite;
 
 @Path("/server")
-public class ServerStatusController {
+public abstract class ServerStatusController {
 	
 	public ServerStatusController(MQTTtoSQLite mqtt){
-		connected = mqtt.getClient().isConnected();
+		this.mqtt = mqtt;
 	}
 	
-	boolean connected;
+	MQTTtoSQLite mqtt;
 
+	public boolean getStatusMQTT(){
+		return mqtt.getClient().isConnected();
+	}
+	
+	
     @GET
     @Path("/status")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatus() {
+    	
+    	boolean connected = getStatusMQTT();
+    	String status = connected ? "CONNECTED" : "DISCONNECTED";
+        System.out.println(connected + "SEE HERE");
+        // Erstellt eine JSON-Struktur
+        String statusJson = new Gson().toJson(connected);
 
-        
-
-        Map<String, Boolean> status = new HashMap<>();
-        status.put("connected", connected);
-
-        return Response.ok(new Gson().toJson(status)).build();
+        // Gibt die JSON-Struktur als Antwort zurück
+        return Response.ok(statusJson).build();
     }
+    
+    
+
 }
