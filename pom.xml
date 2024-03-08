@@ -26,7 +26,12 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.7.32</version> <!-- Aktuelle Version überprüfen -->
-
+	</dependency>
+	<dependency>
+    	<groupId>org.projectlombok</groupId>
+    	<artifactId>lombok</artifactId>
+    	<version>1.18.30</version>
+    	<scope>provided</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
 <dependency>

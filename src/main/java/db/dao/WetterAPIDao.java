@@ -59,6 +59,59 @@ public interface WetterAPIDao extends SqlObject {
            """)
     void updateWetterAPI(@BindBean Data wetterdaten);
 
+    
+    @SqlUpdate(
+    """
+   INSERT INTO wetterAPI (
+    		app_temp,
+    		aqi,
+            city_name,
+            clouds,
+            country_code, 
+            datetime,
+            dewpt,
+            dhi,
+            dni,
+            elev_angle, 
+            ghi,
+            gust,
+            h_angle,
+            lat,
+            lon, 
+            ob_time, 
+            pod, 
+            precip, 
+            pres,
+            rh, 
+            slp, 
+            snow, 
+            solar_rad, 
+            state_code,
+            station, 
+            sunrise, 
+            sunset, 
+            temp, 
+            timezone,
+            ts, 
+            uv, 
+            vis, 
+            icon, 
+            description, 
+            code,
+            wind_cdir, 
+            wind_cdir_full, 
+            wind_dir, 
+            wind_spd)
+            VALUES(:app_temp, :aqi, :city_name, :clouds, :country_code, :datetime, :dewpt, :dhi, :dni, :elev_angle, :ghi, :gust, :h_angle, :lat, :lon, :ob_time, :pod, :precip, :pres,
+            :rh, :slp, :snow, :solar_rad, :state_code, :station, :sunrise, :sunset, :temp, :timezone,:ts, :uv, :vis, :icon, :description, :code, :wind_cdir, :wind_cdir_full, :wind_dir, :wind_spd)	 
+            """
+    		)
+    		void insertIntoWetterAPI(@BindBean Data wetterdaten);
+    
+    @SqlUpdate("DELETE FROM wetterAPI")
+    void deleteFromWetterAPI();    
+    
+    
     default void clearTable() {
         final var handle = getHandle();
         handle.begin();

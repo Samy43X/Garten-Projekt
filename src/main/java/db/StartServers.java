@@ -16,6 +16,7 @@ import rest.server.ServerStatusController;
 import rest.server.StartWeb;
 import util.CSVReaderClass;
 import util.ConfigurationLoader;
+import util.TimeManager;
 import util.JsonToWetterdatenConverter;
 import util.LocalDateHandler;
 import util.WeatherApiClient;
@@ -23,7 +24,7 @@ import util.WeatherApiClient;
 public class StartServers {
 
 	public static void main(String[] args) throws IOException {
-		DataCreation creator = new DataCreation();
+
 		
 		String databaseUrl = "jdbc:sqlite:garten.db";
 		DatabaseManager dbManager = new DatabaseManager(databaseUrl);
@@ -35,19 +36,19 @@ public class StartServers {
 		WeatherIconDaoImpl dao = new WeatherIconDaoImpl(DatabaseManager.getJdbi());
 		CSVReaderClass reader = new CSVReaderClass();
 		MosquittoLauncher broker = new MosquittoLauncher(ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.exe.path"), ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.conf.path"));
-		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://192.168.2.60:1883", "JavaClient");
+		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://localhost:1883", "JavaClient");
 		
 
 		String date = formatter.getFormattedDate();
 		String currentHour = String.valueOf(formatter.getCurrentHour());
 		WeatherApiClient weatherApi = new WeatherApiClient();
 
-        final var weatherIconDao = jdbi.onDemand(WeatherIconDao.class);
-        weatherIconDao.insertAllWeatherIcons(reader.readCSVAndCreateObjects());
+        //final var weatherIconDao = jdbi.onDemand(WeatherIconDao.class);
+        //weatherIconDao.insertAllWeatherIcons(reader.readCSVAndCreateObjects());
         
         System.out.println("Server started");
-        dbManager.dropTableMessungen();
-        dbManager.createTableMessungen();
+        //dbManager.dropTableMessungen();
+        //dbManager.createTableMessungen();
         
         mqtt.startenVonMQTT();
         StartWeb webServer = new StartWeb();
@@ -55,7 +56,7 @@ public class StartServers {
         StartWeb.showControlWindow();
         System.out.println("Webserver started");
         
-        creator.insertWetterAPIAtFullHour(DatabaseManager.getJdbi(), converter.convertJsonToWetterAPI(weather.getWeatherDataJSON()));
+        TimeManager.insertWetterAPIAtFullHour(DatabaseManager.getJdbi(), converter.convertJsonToWetterAPI(weather.getWeatherDataJSON()));
         
         System.out.println(weatherApi.getWeatherDataJSON());
         converter.convertJsonToWetterAPI(weatherApi.getWeatherDataJSON());

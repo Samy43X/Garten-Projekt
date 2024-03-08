@@ -48,7 +48,7 @@ public class JsonToWetterdatenConverter {
     	            for (Map.Entry<String, Object> entry : eintrag.entrySet()) {
     	                String key = entry.getKey();
     	                Object value = entry.getValue();
-    	                System.out.println("Key: " + key + ", Value: " + value);
+    	                //System.out.println("Key: " + key + ", Value: " + value);
     	            }
     	        }
 
