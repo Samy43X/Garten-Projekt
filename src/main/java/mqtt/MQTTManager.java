@@ -12,79 +12,82 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.sqlite3.SQLitePlugin;
 
-import ch.qos.logback.core.boolex.Matcher;
+import db.DatabaseManager;
 
 
-public class MQTTtoSQLite {
+public class MQTTManager {
 //	private static final String DATABASE_URL = "jdbc:sqlite:garten.db";
 
-	public MQTTtoSQLite(Jdbi jdbi, String brokerUrl, String clientId){
-		MQTTtoSQLite.jdbi = jdbi;
-		this.brokerUrl = brokerUrl;
-        this.clientId = clientId;
+	public MQTTManager(){
 	}
 	
-	
-		private static Jdbi jdbi;
+		private static MQTTManager instance;
+		private static Jdbi jdbi = DatabaseManager.getJdbi();
         //final String broker = "tcp://192.168.2.60:1883";
         String brokerUrl; // = "tcp://192.168.178.51:1883";
         String clientId;  //= "JavaClient";
+        private boolean isConnected = false;
         final String topic = "feuchtigkeitsmessung";
 		public Object creator;
 		MqttClient client;
-		
-
-
 		int messageCount = 0;
+		
+		
+		public static synchronized MQTTManager getInstance() {
+	        if (instance == null) {
+	            instance = new MQTTManager();
+	        }
+	        return instance;
+	    }
+		
+		public void connect(String broker, String clientId) {
+	        try {
+	            client = new MqttClient(broker, clientId, new MemoryPersistence());
+	            MqttConnectOptions connOpts = new MqttConnectOptions();
+	            connOpts.setCleanSession(true);
+	            System.out.println("Connecting to broker: " + broker);
+	            client.connect(connOpts);
+	            System.out.println("Connected");
+	            isConnected = true;
+	            
+	            client.setCallback(new MqttCallback() {
+	                @Override
+	                public void connectionLost(Throwable cause) {
+	                    System.out.println("Connection lost: " + cause.toString());
+	                }
 
-        public void startenVonMQTT() {
-        try {
-        	
-        	this.client = new MqttClient(brokerUrl, clientId);
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(true);
-            client.connect(connOpts);
-            System.out.println("Connected to MQTT broker");
+	                @Override
+	                public void messageArrived(String topic, MqttMessage message) throws MqttException {
+	                    saveMessage(topic, new String(message.getPayload()));
+	                    /*messageCount++;
 
-            client.setCallback(new MqttCallback() {
-                @Override
-                public void connectionLost(Throwable cause) {
-                    System.out.println("Connection lost: " + cause.toString());
-                }
+	                    if (messageCount >= 10) {
+	                        new Thread(() -> {
+	                            try {
+	                                client.disconnect();
+	                                System.out.println("Disconnected from the broker after receiving 10 messages.");
+	                            } catch (MqttException e) {
+	                                e.printStackTrace();
+	                            }
+	                        }).start();
+	                    }*/
+	                }
 
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws MqttException {
-                    saveMessage(topic, new String(message.getPayload()));
-                    /*messageCount++;
+	                @Override
+	                public void deliveryComplete(IMqttDeliveryToken token) {
+	                }
+	            });
+	        } catch (MqttException me) {
+	        	System.out.println("Reason: " + me.getReasonCode());
+	            me.printStackTrace();
+	        }
+	        
+	        
+	    }
 
-                    if (messageCount >= 10) {
-                        new Thread(() -> {
-                            try {
-                                client.disconnect();
-                                System.out.println("Disconnected from the broker after receiving 10 messages.");
-                            } catch (MqttException e) {
-                                e.printStackTrace();
-                            }
-                        }).start();
-                    }*/
-                }
-
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-                }
-            });
-
-            client.subscribe(topic);
-            System.out.println("Subscribed to topic: " + topic);
-
-        } catch (MqttException me) {
-            System.out.println("Reason: " + me.getReasonCode());
-            me.printStackTrace();
-        }
-    }
 
         
         public void connectMQTT() {
@@ -201,5 +204,10 @@ public class MQTTtoSQLite {
 		this.client = client;
 	}
 
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+	
 
 }

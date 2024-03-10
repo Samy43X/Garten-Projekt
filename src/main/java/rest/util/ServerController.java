@@ -1,5 +1,6 @@
-package rest.server;
+package rest.util;
 
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
@@ -7,7 +8,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/server")
 public class ServerController {
 
-    @POST
+    @GET
     @Path("/database/connect")
     public Response connectDatabase() {
         // Logik zum Verbinden mit der Datenbank

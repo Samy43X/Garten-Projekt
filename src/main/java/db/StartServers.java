@@ -5,15 +5,16 @@ import java.io.IOException;
 
 import org.jdbi.v3.core.Jdbi;
 
+import com.google.gson.Gson;
 import com.opencsv.CSVReader;
 
 import db.dao.WeatherIconDao;
-import mqtt.MQTTtoSQLite;
+import mqtt.MQTTManager;
 import mqtt.MosquittoLauncher;
 import objects.Data;
 import objects.WeatherIconDaoImpl;
-import rest.server.ServerStatusController;
 import rest.server.StartWeb;
+import rest.util.ServerStatusController;
 import util.CSVReaderClass;
 import util.ConfigurationLoader;
 import util.TimeManager;
@@ -36,7 +37,8 @@ public class StartServers {
 		WeatherIconDaoImpl dao = new WeatherIconDaoImpl(DatabaseManager.getJdbi());
 		CSVReaderClass reader = new CSVReaderClass();
 		MosquittoLauncher broker = new MosquittoLauncher(ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.exe.path"), ConfigurationLoader.loadApplicationProperties().getProperty("mosquitto.conf.path"));
-		MQTTtoSQLite mqtt = new MQTTtoSQLite(DatabaseManager.getJdbi(), "tcp://localhost:1883", "JavaClient");
+		MQTTManager mqttManager = MQTTManager.getInstance();
+
 		
 
 		String date = formatter.getFormattedDate();
@@ -50,7 +52,7 @@ public class StartServers {
         //dbManager.dropTableMessungen();
         //dbManager.createTableMessungen();
         
-        mqtt.startenVonMQTT();
+        mqttManager.connect("tcp://localhost:1883", "JavaClient");
         StartWeb webServer = new StartWeb();
         webServer.startServer();
         StartWeb.showControlWindow();
@@ -60,6 +62,7 @@ public class StartServers {
         
         System.out.println(weatherApi.getWeatherDataJSON());
         converter.convertJsonToWetterAPI(weatherApi.getWeatherDataJSON());
+        System.out.println(new Gson().toJson(MQTTManager.getInstance().isConnected()) + " | COLD");
 
         
         

@@ -7,6 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlite3.SQLitePlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
+
 public class DatabaseManager {
 	private static Jdbi jdbi = null;
 	private static String databaseUrl;
